@@ -1,5 +1,9 @@
 package io.github.jihch.boot;
 
+import ch.qos.logback.core.db.DBHelper;
+import io.github.jihch.boot.bean.Pet;
+import io.github.jihch.boot.bean.User;
+import io.github.jihch.boot.config.MyConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -24,6 +28,43 @@ public class MainApplication {
         for (String name : beanDefinitionNames) {
             System.out.println(name);
         }
+
+        //3、从容器中获取组件
+        Pet tom01 = context.getBean("tom", Pet.class);
+
+        Pet tom02 = context.getBean("tom", Pet.class);
+
+        System.out.println("组件：" + (tom01 == tom02));
+
+        //4、io.github.jihch.boot.config.MyConfig$$EnhancerBySpringCGLIB$$f0fca2ff@26c89563
+        MyConfig bean = context.getBean(MyConfig.class);
+
+        System.out.println(bean);
+
+        //如果 @Configuration(proxyBeanMethods = true) 代理对象调用方法。
+        //SpringBoot 总会检查这个组件是否在容器中有，保持组件单实例
+        User user = bean.user01();
+
+        User user1 = bean.user01();
+
+        System.out.println(user == user1);
+
+        User user01 = context.getBean("user01", User.class);
+
+        Pet tom = context.getBean("tom", Pet.class);
+
+        System.out.println("用户的宠物：" + (user01.getPet() == tom));
+
+        //5、获取组件、验证 @Import 导入组件的功能
+        String[] beanNamesForType = context.getBeanNamesForType(User.class);
+        System.out.println("======");
+        for (String s:beanNamesForType) {
+            System.out.println(s);
+        }
+
+        DBHelper bean1 = context.getBean(DBHelper.class);
+        System.out.println(bean1);
+
     }
 
 }
